@@ -26,6 +26,9 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
         setContentView(R.layout.activity_main);
 
         ScreenGoApplication.injector.inject(this);
+        boolean injected = (mainPresenter != null) && (mainPresenter.placesInteractor != null);
+        TextView debugTextView = findViewById(R.id.debugText);
+        debugTextView.append("Dependency injection: " + (injected ? "OK" : "FAILED") + "\n");
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -38,24 +41,26 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
                         .setAction("Action", null).show();
             }
         });
-
-        boolean injected = mainPresenter != null;
-        TextView debugTextView = findViewById(R.id.debugText);
-        debugTextView.append("Dependency injection: " + (injected ? "OK" : "FAILED") + "\n");
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         mainPresenter.attachScreen(this);
-
-        mainPresenter.updateWeather();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         mainPresenter.detachScreen();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mainPresenter.refreshPlaces();
+        mainPresenter.refreshWeather();
     }
 
     @Override
@@ -82,12 +87,15 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
 
     @Override
     public void showWeather(boolean isSunny) {
+        // TODO
         TextView debugTextView = findViewById(R.id.debugText);
         debugTextView.append("Weather: " + (isSunny ? "Sunny" : "Not sunny") + "\n");
     }
 
     @Override
     public void showPlaces() {
+        TextView debugTextView = findViewById(R.id.debugText);
+        debugTextView.append("Show places\n");
         // TODO
     }
 }
