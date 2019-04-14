@@ -32,4 +32,9 @@ public class MainPresenter extends Presenter<MainScreen> {
         // TODO: get place list and pass it to the screen as a function parameter
         screen.showPlaces();
     }
+
+    public void deletePlace() {
+        // TODO get place and pass it to the interactor as a function parameter
+        placesInteractor.deletePlace();
+    }
 }

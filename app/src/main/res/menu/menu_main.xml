@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.screengo.ui.MainActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/menuItemAbout"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:title="About"
         app:showAsAction="never" />
 </menu>

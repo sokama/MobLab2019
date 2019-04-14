@@ -1,5 +1,6 @@
 package com.example.screengo.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -77,8 +78,9 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.menuItemAbout) {
+            Intent launchAboutPageIntent = new Intent(MainActivity.this, AboutActivity.class);
+            startActivityForResult(launchAboutPageIntent, 0);
             return true;
         }
 
@@ -97,5 +99,10 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
         TextView debugTextView = findViewById(R.id.debugText);
         debugTextView.append("Show places\n");
         // TODO
+    }
+
+    public void deletePlace() {
+        // TODO: called when a place's delete button is pressed. Pass the place to the presenter
+        mainPresenter.deletePlace();
     }
 }
