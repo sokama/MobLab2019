@@ -1,4 +1,4 @@
-package com.example.screengo;
+package com.example.screengo.ui;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -8,13 +8,25 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+import com.example.screengo.R;
+import com.example.screengo.ScreenGoApplication;
+
+import javax.inject.Inject;
+
+public class MainActivity extends AppCompatActivity implements MainScreen {
+
+    @Inject
+    MainPresenter mainPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ScreenGoApplication.injector.inject(this);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -26,6 +38,24 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        boolean injected = mainPresenter != null;
+        TextView debugTextView = findViewById(R.id.debugText);
+        debugTextView.append("Dependency injection: " + (injected ? "OK" : "FAILED") + "\n");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mainPresenter.attachScreen(this);
+
+        mainPresenter.updateWeather();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mainPresenter.detachScreen();
     }
 
     @Override
@@ -48,5 +78,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void showWeather(boolean isSunny) {
+        TextView debugTextView = findViewById(R.id.debugText);
+        debugTextView.append("Weather: " + (isSunny ? "Sunny" : "Not sunny") + "\n");
+    }
+
+    @Override
+    public void showPlaces() {
+        // TODO
     }
 }
