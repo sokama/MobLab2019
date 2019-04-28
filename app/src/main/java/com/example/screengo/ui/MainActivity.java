@@ -27,7 +27,11 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
         setContentView(R.layout.activity_main);
 
         ScreenGoApplication.injector.inject(this);
-        boolean injected = (mainPresenter != null) && (mainPresenter.placesInteractor != null);
+        boolean injected = (mainPresenter != null) &&
+                (mainPresenter.placesInteractor != null) &&
+                (mainPresenter.locationInteractor != null) &&
+                (mainPresenter.locationInteractor.weatherApi != null) &&
+                (mainPresenter.networkExecutor != null);
         TextView debugTextView = findViewById(R.id.debugText);
         debugTextView.append("Dependency injection: " + (injected ? "OK" : "FAILED") + "\n");
 
@@ -88,10 +92,10 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
     }
 
     @Override
-    public void showWeather(boolean isSunny) {
+    public void showWeather(String weatherText, boolean isSunny) {
         // TODO
         TextView debugTextView = findViewById(R.id.debugText);
-        debugTextView.append("Weather: " + (isSunny ? "Sunny" : "Not sunny") + "\n");
+        debugTextView.append("Weather: " + weatherText + " (" + (isSunny ? "Sunny" : "Not sunny") + ")\n");
     }
 
     @Override
