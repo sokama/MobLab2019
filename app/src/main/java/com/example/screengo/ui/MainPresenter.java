@@ -2,7 +2,9 @@ package com.example.screengo.ui;
 
 import com.example.screengo.interactor.LocationInteractor;
 import com.example.screengo.interactor.PlacesInteractor;
+import com.example.screengo.model.Place;
 
+import java.util.List;
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
@@ -49,13 +51,15 @@ public class MainPresenter extends Presenter<MainScreen> {
     }
 
     public void refreshPlaces() {
-        placesInteractor.getPlaces();
-        // TODO: get place list and pass it to the screen as a function parameter
-        screen.showPlaces();
+        List<Place> places = placesInteractor.getPlaces();
+        screen.showPlaces(places);
     }
 
-    public void deletePlace() {
-        // TODO get place and pass it to the interactor as a function parameter
-        placesInteractor.deletePlace();
+    public void deletePlace(Place place) {
+        placesInteractor.deletePlace(place);
+    }
+
+    public void deleteAllPlaces() {
+        placesInteractor.deleteAllPlaces();
     }
 }

@@ -13,6 +13,9 @@ import android.widget.TextView;
 
 import com.example.screengo.R;
 import com.example.screengo.ScreenGoApplication;
+import com.example.screengo.model.Place;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -26,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /* DEBUG */
         ScreenGoApplication.injector.inject(this);
         boolean injected = (mainPresenter != null) &&
                 (mainPresenter.placesInteractor != null) &&
@@ -34,6 +38,9 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
                 (mainPresenter.networkExecutor != null);
         TextView debugTextView = findViewById(R.id.debugText);
         debugTextView.append("Dependency injection: " + (injected ? "OK" : "FAILED") + "\n");
+
+        /* DEBUG */
+        mainPresenter.deleteAllPlaces();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -99,14 +106,14 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
     }
 
     @Override
-    public void showPlaces() {
+    public void showPlaces(List<Place> places) {
         TextView debugTextView = findViewById(R.id.debugText);
-        debugTextView.append("Show places\n");
+        debugTextView.append("Stored places: " + places.size() + "\n");
         // TODO
     }
 
-    public void deletePlace() {
+    public void deletePlace(Place place) {
         // TODO: called when a place's delete button is pressed. Pass the place to the presenter
-        mainPresenter.deletePlace();
+        mainPresenter.deletePlace(place);
     }
 }

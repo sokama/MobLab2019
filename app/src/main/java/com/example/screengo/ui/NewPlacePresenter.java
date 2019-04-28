@@ -2,6 +2,7 @@ package com.example.screengo.ui;
 
 import com.example.screengo.interactor.LocationInteractor;
 import com.example.screengo.interactor.PlacesInteractor;
+import com.example.screengo.model.Place;
 
 import javax.inject.Inject;
 
@@ -25,9 +26,8 @@ public class NewPlacePresenter extends Presenter<NewPlaceScreen>{
         super.detachScreen();
     }
 
-    public void addPlace() {
-        // TODO: get place and pass it to the interactor as a function parameter
-        placesInteractor.addPlace();
+    public void addPlace(Place place) {
+        placesInteractor.addPlace(place);
     }
 
     public void refreshLocation() {

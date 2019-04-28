@@ -1,20 +1,31 @@
 package com.example.screengo.interactor;
 
+import com.example.screengo.model.Place;
+
+import java.util.List;
+
 import javax.inject.Inject;
 
 public class PlacesInteractor {
     @Inject
     public PlacesInteractor() {}
 
-    public void getPlaces() {
-        // TODO get place list and return it
+    public List<Place> getPlaces() {
+        return Place.listAll(Place.class);
     }
 
-    public void addPlace() {
-        // TODO receive a place as parameter and add it to the place list
+    public void addPlace(Place place) {
+        place.save();
+        // TODO refresh recycler view / place list?
     }
 
-    public void deletePlace() {
-        // TODO receive a place as parameter and delete it from the place list
+    public void deletePlace(Place place) {
+        place.delete();
+        // TODO refresh recycler view / place list?
+    }
+
+    public void deleteAllPlaces() {
+        Place.deleteAll(Place.class);
+        // TODO refresh recycler view / place list?
     }
 }

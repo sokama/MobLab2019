@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.example.screengo.R;
 import com.example.screengo.ScreenGoApplication;
+import com.example.screengo.model.Place;
 
 import javax.inject.Inject;
 
@@ -29,6 +30,10 @@ public class NewPlaceActivity extends AppCompatActivity implements NewPlaceScree
     @Override
     protected void onStart() {
         super.onStart();
+
+        /* DEBUG */
+        addPlace(new Place("asd", 5, 5, 5f, 5));
+
         newPlacePresenter.attachScreen(this);
     }
 
@@ -50,8 +55,8 @@ public class NewPlaceActivity extends AppCompatActivity implements NewPlaceScree
         // TODO
     }
 
-    public void addPlace() {
-        // TODO: called when the OK button is pressed. Pass the palce to the presenter
-        newPlacePresenter.addPlace();
+    public void addPlace(Place place) {
+        // TODO: called when the OK button is pressed. Pass the place to the presenter
+        newPlacePresenter.addPlace(place);
     }
 }
