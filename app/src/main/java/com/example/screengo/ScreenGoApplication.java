@@ -1,8 +1,8 @@
 package com.example.screengo;
 
-import android.app.Application;
+import com.orm.SugarApp;
 
-public class ScreenGoApplication extends Application {
+public class ScreenGoApplication extends SugarApp {
     public static ScreenGoApplicationComponent injector;
 
     @Override
