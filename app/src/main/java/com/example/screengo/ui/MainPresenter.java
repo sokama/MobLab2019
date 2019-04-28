@@ -43,10 +43,9 @@ public class MainPresenter extends Presenter<MainScreen> {
                 boolean isSunny = locationInteractor.isWeatherSunny(weatherState);
 
                 // Refresh screen
-                screen.showWeather(String.valueOf(locationId), isSunny); // todo return state instead of id
+                screen.showWeather(weatherState, isSunny);
             }
         });
-
     }
 
     public void refreshPlaces() {

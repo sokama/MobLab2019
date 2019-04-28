@@ -1,5 +1,8 @@
 package com.example.screengo.network;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -15,8 +18,12 @@ public class NetworkModule {
     @Provides
     @Singleton
     public WeatherApi provideWeatherApi() {
+        Gson gson = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                .create();
+
         return new Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .baseUrl("https://www.metaweather.com/api/")
                 .build().create(WeatherApi.class);
     }

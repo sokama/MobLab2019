@@ -1,13 +1,17 @@
 package com.example.screengo.interactor;
 
+import android.text.format.DateUtils;
 import android.util.Log;
 
 import com.example.screengo.model.Location;
+import com.example.screengo.model.LocationInfo;
+import com.example.screengo.model.WeatherInfo;
 import com.example.screengo.network.WeatherApi;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -22,6 +26,7 @@ public class LocationInteractor {
 
     private List<String> sunnyWeatherStates = Arrays.asList("Clear", "Light Cloud", "Showers");
     private int cachedLocationId = -1;
+    private String cachedWeatherState = null;
 
     @Inject
     public LocationInteractor(WeatherApi weatherApi) {
@@ -72,7 +77,38 @@ public class LocationInteractor {
     }
 
     public String getWeatherState(int locationId) {
-        return "Light Cloud"; // TODO: get weather state from weather api
+        if (cachedWeatherState != null) {
+            Log.d(tag, "Used cached weather state: " + cachedWeatherState);
+            return cachedWeatherState;
+        }
+
+        try {
+            // Get location info from weather api
+            Call<LocationInfo> getLocationInfoCall = weatherApi.getLocationInfo(locationId);
+            Response<LocationInfo> response = getLocationInfoCall.execute();
+            LocationInfo locationInfo = response.body();
+            if (locationInfo == null) {
+                Log.e(tag, "Location info is null for id: " + locationId);
+                return "unknown";
+            }
+
+            // Get todays weather info from location info
+            List<WeatherInfo> weatherInfos = locationInfo.getConsolidatedWeather();
+            if (weatherInfos == null || weatherInfos.isEmpty()) {
+                Log.e(tag, "Location info doesn't have weather infos (id: " + locationId + ")");
+                return "unknown";
+            }
+            WeatherInfo todaysWeatherInfo = weatherInfos.get(0);
+
+            // Get weather state from today's weather info
+            cachedWeatherState = todaysWeatherInfo.getWeatherStateName();
+            Log.d(tag, "Got weather state from weather API: " + cachedWeatherState);
+            return todaysWeatherInfo.getWeatherStateName();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "unknown";
+        }
     }
 
     public boolean isWeatherSunny(String weatherState) {
