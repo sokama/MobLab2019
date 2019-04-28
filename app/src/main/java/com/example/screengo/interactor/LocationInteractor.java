@@ -34,11 +34,11 @@ public class LocationInteractor {
     }
 
     public void getCoordinates() {
-        // TODO: find GPS coordinates and return it
+        // TODO: find GPS coordinates and return it (this method will probably move to the activity)
     }
 
     public void getLocationName() {
-        // TODO: get GPS coordinates as parameter and return the name of the location
+        // TODO: get GPS coordinates as parameter and return the name of the location (this method will probably move to the activity)
     }
 
     public int getLocationId(String cityName) {
