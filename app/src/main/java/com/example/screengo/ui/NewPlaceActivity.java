@@ -3,6 +3,7 @@ package com.example.screengo.ui;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.example.screengo.R;
@@ -12,6 +13,8 @@ import com.example.screengo.model.Place;
 import javax.inject.Inject;
 
 public class NewPlaceActivity extends AppCompatActivity implements NewPlaceScreen{
+
+    private static final String TAG = "NewPlaceActivity";
 
     @Inject
     NewPlacePresenter newPlacePresenter;
@@ -23,8 +26,7 @@ public class NewPlaceActivity extends AppCompatActivity implements NewPlaceScree
 
         ScreenGoApplication.injector.inject(this);
         boolean injected = (newPlacePresenter != null) && (newPlacePresenter.placesInteractor != null) && (newPlacePresenter.locationInteractor != null);
-        TextView debugTextView = findViewById(R.id.newPlaceDebugText);
-        debugTextView.append("Dependency injection: " + (injected ? "OK" : "FAILED") + "\n");
+        Log.d(TAG, "Dependency injection: " + (injected ? "OK" : "FAILED"));
     }
 
     @Override
