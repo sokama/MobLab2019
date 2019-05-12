@@ -1,10 +1,13 @@
 package com.example.screengo.ui;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +18,7 @@ import android.widget.TextView;
 import com.example.screengo.R;
 import com.example.screengo.ScreenGoApplication;
 import com.example.screengo.model.Place;
+import com.example.screengo.model.PlaceAdapter;
 
 import org.w3c.dom.Text;
 
@@ -30,6 +34,9 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
     MainPresenter mainPresenter;
 
     private TextView weatherStateTV;
+
+    private RecyclerView recyclerView;
+    private PlaceAdapter adapter;
 
     private boolean isSunny;
 
@@ -63,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
                 startActivityForResult(launchNewPlacePageIntent, 0);
             }
         });
+
+        initRecyclerView();
     }
 
     @Override
@@ -125,11 +134,35 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
     @Override
     public void showPlaces(List<Place> places) {
         Log.d(TAG, "Stored places: " + places.size());
-        // TODO
+        loadItemsInBackground();
     }
 
     public void deletePlace(Place place) {
         // TODO: called when a place's delete button is pressed. Pass the place to the presenter
         mainPresenter.deletePlace(place);
+    }
+
+    private void initRecyclerView() {
+        recyclerView = (RecyclerView) findViewById(R.id.placeListRecyclerView);
+        adapter = new PlaceAdapter();
+        loadItemsInBackground();
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+    }
+
+    private void loadItemsInBackground() {
+        new AsyncTask<Void, Void, List<Place>>() {
+
+            @Override
+            protected List<Place> doInBackground(Void... voids) {
+                return Place.listAll(Place.class);
+            }
+
+            @Override
+            protected void onPostExecute(List<Place> places) {
+                super.onPostExecute(places);
+                adapter.update(places);
+            }
+        }.execute();
     }
 }
