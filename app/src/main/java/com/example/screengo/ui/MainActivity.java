@@ -1,6 +1,8 @@
 package com.example.screengo.ui;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.screengo.R;
@@ -27,6 +30,10 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
 
     private static final String TAG = "MainActivity_SG";
 
+    private static final String SHARED_PREF_BRIGHTNESS_CLOUDY = "BRIGHTNESS_CLOUDY";
+    private static final String SHARED_PREF_BRIGHTNESS_SUNNY = "BRIGHTNESS_SUNNY";
+
+
     @Inject
     MainPresenter mainPresenter;
 
@@ -34,6 +41,9 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
 
     private RecyclerView recyclerView;
     private PlaceAdapter adapter;
+
+    private SeekBar outsideBrightnessCloudy;
+    private SeekBar outsideBrightnessSunny;
 
     private boolean isSunny;
 
@@ -43,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
         setContentView(R.layout.activity_main);
 
         weatherStateTV = findViewById(R.id.weatherStateText);
+        outsideBrightnessCloudy = findViewById(R.id.CloudyBrightness);
+        outsideBrightnessSunny = findViewById(R.id.SunnyBrightness);
 
         /* DEBUG */
         ScreenGoApplication.injector.inject(this);
@@ -66,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
         });
 
         initRecyclerView();
+        getOutsideBrightnesses();
     }
 
     @Override
@@ -77,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
     @Override
     protected void onStop() {
         super.onStop();
+        saveOutsideBrightnesses();
         mainPresenter.detachScreen();
     }
 
@@ -151,5 +165,25 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
                 adapter.update(places);
             }
         }.execute();
+    }
+
+    private void getOutsideBrightnesses() {
+        int defaultBrightness = 50;
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+
+        int cloudyBrightness = sharedPref.getInt(SHARED_PREF_BRIGHTNESS_CLOUDY, defaultBrightness);
+        int sunnyBrightness = sharedPref.getInt(SHARED_PREF_BRIGHTNESS_SUNNY, defaultBrightness);
+
+        outsideBrightnessCloudy.setProgress(cloudyBrightness);
+        outsideBrightnessSunny.setProgress(sunnyBrightness);
+    }
+
+    private void saveOutsideBrightnesses() {
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+
+        sharedPref.edit()
+                .putInt(SHARED_PREF_BRIGHTNESS_CLOUDY, outsideBrightnessCloudy.getProgress())
+                .putInt(SHARED_PREF_BRIGHTNESS_SUNNY, outsideBrightnessSunny.getProgress())
+                .apply();
     }
 }
