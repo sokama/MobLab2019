@@ -134,11 +134,6 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
         loadItemsInBackground();
     }
 
-    public void deletePlace(Place place) {
-        // TODO: called when a place's delete button is pressed. Pass the place to the presenter
-        mainPresenter.deletePlace(place);
-    }
-
     private void initRecyclerView() {
         recyclerView = (RecyclerView) findViewById(R.id.placeListRecyclerView);
         adapter = new PlaceAdapter();

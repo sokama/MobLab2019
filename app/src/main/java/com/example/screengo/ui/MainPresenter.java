@@ -40,7 +40,7 @@ public class MainPresenter extends Presenter<MainScreen> {
             public void run() {
                 // Get weather info
                 String cityName = "Budapest"; // TODO: get city name from location interactor
-                int locationId = locationInteractor.getLocationId(cityName); // TODO: this should be stored on startup
+                int locationId = locationInteractor.getLocationId(cityName);
                 String weatherState = locationInteractor.getWeatherState(locationId);
                 boolean isSunny = locationInteractor.isWeatherSunny(weatherState);
 

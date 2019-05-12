@@ -16,16 +16,13 @@ public class PlacesInteractor {
 
     public void addPlace(Place place) {
         place.save();
-        // TODO refresh recycler view / place list?
     }
 
     public void deletePlace(Place place) {
         place.delete();
-        // TODO refresh recycler view / place list?
     }
 
     public void deleteAllPlaces() {
         Place.deleteAll(Place.class);
-        // TODO refresh recycler view / place list?
     }
 }

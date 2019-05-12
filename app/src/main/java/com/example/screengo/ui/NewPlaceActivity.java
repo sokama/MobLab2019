@@ -100,7 +100,6 @@ public class NewPlaceActivity extends AppCompatActivity implements NewPlaceScree
     }
 
     public void addPlace(Place place) {
-        // TODO: called when the OK button is pressed. Pass the place to the presenter
         newPlacePresenter.addPlace(place);
     }
 }
