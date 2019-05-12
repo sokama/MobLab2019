@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.screengo.R;
 import com.example.screengo.ScreenGoApplication;
@@ -56,6 +57,11 @@ public class NewPlaceActivity extends AppCompatActivity implements NewPlaceScree
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (radius.getText().toString().isEmpty()) {
+                    Toast.makeText(NewPlaceActivity.this, "Radius can't be 0", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 addPlace(new Place(
                         name.getText().toString(),
                         5, // TODO
