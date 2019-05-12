@@ -21,6 +21,8 @@ import com.example.screengo.R;
 import com.example.screengo.ScreenGoApplication;
 import com.example.screengo.model.Place;
 import com.example.screengo.model.PlaceAdapter;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import java.util.List;
 
@@ -46,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
     private SeekBar outsideBrightnessSunny;
 
     private boolean isSunny;
+
+    private Tracker tracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +81,10 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
             }
         });
 
+        // Obtain the shared Tracker instance.
+        ScreenGoApplication application = (ScreenGoApplication) getApplication();
+        tracker = application.getDefaultTracker();
+
         initRecyclerView();
         getOutsideBrightnesses();
     }
@@ -97,6 +105,9 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
     @Override
     protected void onResume() {
         super.onResume();
+
+        tracker.setScreenName("Image~Main");
+        tracker.send(new HitBuilders.ScreenViewBuilder().build());
 
         mainPresenter.refreshPlaces();
         mainPresenter.refreshWeather(this);

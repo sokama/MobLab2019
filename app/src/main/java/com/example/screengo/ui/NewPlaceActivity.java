@@ -15,6 +15,8 @@ import android.widget.Toast;
 import com.example.screengo.R;
 import com.example.screengo.ScreenGoApplication;
 import com.example.screengo.model.Place;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import javax.inject.Inject;
 
@@ -31,6 +33,8 @@ public class NewPlaceActivity extends AppCompatActivity implements NewPlaceScree
 
     double longitude;
     double latitude;
+
+    private Tracker tracker;
 
     @Inject
     NewPlacePresenter newPlacePresenter;
@@ -73,9 +77,19 @@ public class NewPlaceActivity extends AppCompatActivity implements NewPlaceScree
                         Float.parseFloat(radius.getText().toString()),
                         brightness.getProgress(),
                         locationText.getText().toString()));
+
+                tracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction("Add new place")
+                        .build());
+
                 finish();
             }
         });
+
+        // Obtain the shared Tracker instance.
+        ScreenGoApplication application = (ScreenGoApplication) getApplication();
+        tracker = application.getDefaultTracker();
     }
 
     @Override
@@ -94,6 +108,9 @@ public class NewPlaceActivity extends AppCompatActivity implements NewPlaceScree
     @Override
     protected void onResume() {
         super.onResume();
+
+        tracker.setScreenName("Image~NewPlace");
+        tracker.send(new HitBuilders.ScreenViewBuilder().build());
 
         newPlacePresenter.refreshLocation(this);
     }
