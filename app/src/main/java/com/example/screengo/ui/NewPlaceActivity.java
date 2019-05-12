@@ -14,7 +14,7 @@ import javax.inject.Inject;
 
 public class NewPlaceActivity extends AppCompatActivity implements NewPlaceScreen{
 
-    private static final String TAG = "NewPlaceActivity";
+    private static final String TAG = "NewPlaceActivity_SG";
 
     @Inject
     NewPlacePresenter newPlacePresenter;
@@ -34,7 +34,7 @@ public class NewPlaceActivity extends AppCompatActivity implements NewPlaceScree
         super.onStart();
 
         /* DEBUG */
-        addPlace(new Place("asd", 5, 5, 5f, 5));
+        addPlace(new Place("asd", 5, 5, 5f, 5, "Asd street"));
 
         newPlacePresenter.attachScreen(this);
     }

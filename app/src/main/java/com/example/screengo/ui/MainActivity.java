@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,19 +16,29 @@ import com.example.screengo.R;
 import com.example.screengo.ScreenGoApplication;
 import com.example.screengo.model.Place;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
 
 import javax.inject.Inject;
 
 public class MainActivity extends AppCompatActivity implements MainScreen {
 
+    private static final String TAG = "MainActivity_SG";
+
     @Inject
     MainPresenter mainPresenter;
+
+    private TextView weatherStateTV;
+
+    private boolean isSunny;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        weatherStateTV = findViewById(R.id.weatherStateText);
 
         /* DEBUG */
         ScreenGoApplication.injector.inject(this);
@@ -36,8 +47,7 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
                 (mainPresenter.locationInteractor != null) &&
                 (mainPresenter.locationInteractor.weatherApi != null) &&
                 (mainPresenter.networkExecutor != null);
-        TextView debugTextView = findViewById(R.id.debugText);
-        debugTextView.append("Dependency injection: " + (injected ? "OK" : "FAILED") + "\n");
+        Log.d(TAG, "Dependency injection: " + (injected ? "OK" : "FAILED"));
 
         /* DEBUG */
         mainPresenter.deleteAllPlaces();
@@ -99,16 +109,22 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
     }
 
     @Override
-    public void showWeather(String weatherText, boolean isSunny) {
-        // TODO
-        TextView debugTextView = findViewById(R.id.debugText);
-        debugTextView.append("Weather: " + weatherText + " (" + (isSunny ? "Sunny" : "Not sunny") + ")\n");
+    public void showWeather(final String weatherText, final boolean isSunny) {
+
+        this.isSunny = isSunny;
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                weatherStateTV.setText(weatherText + " (" + (isSunny ? "Sunny" : "Not sunny") + ")");
+            }
+        });
+        Log.d(TAG, "Weather: " + weatherText + " (" + (isSunny ? "Sunny" : "Not sunny") + ")");
     }
 
     @Override
     public void showPlaces(List<Place> places) {
-        TextView debugTextView = findViewById(R.id.debugText);
-        debugTextView.append("Stored places: " + places.size() + "\n");
+        Log.d(TAG, "Stored places: " + places.size());
         // TODO
     }
 
