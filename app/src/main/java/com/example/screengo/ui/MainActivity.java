@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.example.screengo.R;
 import com.example.screengo.ScreenGoApplication;
 import com.example.screengo.model.Place;
@@ -27,6 +28,8 @@ import com.google.android.gms.analytics.Tracker;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity implements MainScreen {
 
@@ -84,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
         // Obtain the shared Tracker instance.
         ScreenGoApplication application = (ScreenGoApplication) getApplication();
         tracker = application.getDefaultTracker();
+
+        Fabric.with(this, new Crashlytics());
 
         initRecyclerView();
         getOutsideBrightnesses();

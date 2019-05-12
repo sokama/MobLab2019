@@ -40,6 +40,9 @@
             android:name="QUERY_LOG"
             android:value="true" />
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="e3b2184fd0267992c9144ac353ffb974caad8514" />
     </application>
 
 </manifest>
