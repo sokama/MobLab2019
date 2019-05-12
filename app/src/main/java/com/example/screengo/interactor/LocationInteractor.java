@@ -1,7 +1,18 @@
 package com.example.screengo.interactor;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.LocationManager;
+import android.provider.Telephony;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.screengo.model.Location;
 import com.example.screengo.model.LocationInfo;
@@ -13,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -28,17 +40,90 @@ public class LocationInteractor {
     private int cachedLocationId = -1;
     private String cachedWeatherState = null;
 
+    private Activity activity;
+    private LocationManager locationManager;
+    private Geocoder geocoder;
+
     @Inject
     public LocationInteractor(WeatherApi weatherApi) {
         this.weatherApi = weatherApi;
     }
 
-    public void getCoordinates() {
-        // TODO: find GPS coordinates and return it (this method will probably move to the activity)
+    public android.location.Location getCoordinates(Activity activity) {
+        if (geocoder == null || locationManager == null || this.activity != activity) {
+            setupGeocoder(activity);
+        }
+
+        // Check permission
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, "Location permission not granted!");
+            return null;
+        }
+
+        android.location.Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (location == null)
+            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+        return location;
     }
 
-    public void getLocationName() {
-        // TODO: get GPS coordinates as parameter and return the name of the location (this method will probably move to the activity)
+    public String getLocationName(android.location.Location location) {
+        if (location == null) {
+            Log.e(TAG, "Getting location name FAILED: location is null");
+            return "Unknown location";
+        }
+
+        double longitude = location.getLongitude();
+        double latitude = location.getLatitude();
+
+        // Create address from location
+        Address address = getAddress(latitude, longitude);
+        if (address == null) {
+            Log.e(TAG, "Getting location name FAILED: no address found");
+            return "Unknown location";
+        }
+
+        return address.getAddressLine(0);
+    }
+
+    public String getCityName(android.location.Location location) {
+        if (location == null) {
+            Log.e(TAG, "Getting city name FAILED: location is null");
+            return "Unknown city";
+        }
+
+        double longitude = location.getLongitude();
+        double latitude = location.getLatitude();
+
+        // Create address from location
+        Address address = getAddress(latitude, longitude);
+        if (address == null) {
+            Log.e(TAG, "Getting city name FAILED: no address found");
+            return "Unknown city";
+        }
+
+        return address.getLocality();
+    }
+
+    private Address getAddress(double latitude, double longitude) {
+        List<Address> addresses = null;
+        try {
+            addresses = geocoder.getFromLocation(latitude, longitude, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (addresses == null || addresses.size() < 1) {
+            Log.e(TAG, "Getting address FAILED: no address found");
+            return null;
+        }
+
+        return addresses.get(0);
+    }
+
+    private void setupGeocoder(Activity activity) {
+        locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+        geocoder = new Geocoder(activity, Locale.getDefault());
     }
 
     public int getLocationId(String cityName) {

@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
         super.onResume();
 
         mainPresenter.refreshPlaces();
-        mainPresenter.refreshWeather();
+        mainPresenter.refreshWeather(this);
     }
 
     @Override
@@ -125,12 +125,10 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
                 weatherStateTV.setText(weatherText + " (" + (isSunny ? "Sunny" : "Not sunny") + ")");
             }
         });
-        Log.d(TAG, "Weather: " + weatherText + " (" + (isSunny ? "Sunny" : "Not sunny") + ")");
     }
 
     @Override
     public void showPlaces(List<Place> places) {
-        Log.d(TAG, "Stored places: " + places.size());
         loadItemsInBackground();
     }
 

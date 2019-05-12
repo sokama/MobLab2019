@@ -90,13 +90,12 @@ public class NewPlaceActivity extends AppCompatActivity implements NewPlaceScree
     @Override
     protected void onResume() {
         super.onResume();
-
-        newPlacePresenter.refreshLocation();
+        newPlacePresenter.refreshLocation(this);
     }
 
     @Override
     public void showLocation(String locationName) {
-        // TODO
+        locationText.setText(locationName);
     }
 
     public void addPlace(Place place) {

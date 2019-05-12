@@ -1,5 +1,8 @@
 package com.example.screengo.ui;
 
+import android.app.Activity;
+import android.location.Location;
+
 import com.example.screengo.interactor.LocationInteractor;
 import com.example.screengo.interactor.PlacesInteractor;
 import com.example.screengo.model.Place;
@@ -30,11 +33,9 @@ public class NewPlacePresenter extends Presenter<NewPlaceScreen>{
         placesInteractor.addPlace(place);
     }
 
-    public void refreshLocation() {
-        locationInteractor.getCoordinates();
-        // TODO: pass coordinates as parameter
-        locationInteractor.getLocationName();
-        // TODO: pass location name as parameter
-        screen.showLocation("asd");
+    public void refreshLocation(Activity activity) {
+        Location location = locationInteractor.getCoordinates(activity);
+        String locationName = locationInteractor.getLocationName(location);
+        screen.showLocation(locationName);
     }
 }
