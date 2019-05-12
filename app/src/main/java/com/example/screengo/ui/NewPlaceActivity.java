@@ -1,5 +1,6 @@
 package com.example.screengo.ui;
 
+import android.location.Location;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -27,6 +28,9 @@ public class NewPlaceActivity extends AppCompatActivity implements NewPlaceScree
     private SeekBar brightness;
     private Button cancelButton;
     private Button okButton;
+
+    double longitude;
+    double latitude;
 
     @Inject
     NewPlacePresenter newPlacePresenter;
@@ -64,8 +68,8 @@ public class NewPlaceActivity extends AppCompatActivity implements NewPlaceScree
 
                 addPlace(new Place(
                         name.getText().toString(),
-                        5, // TODO
-                        5, // TODO
+                        longitude,
+                        latitude,
                         Float.parseFloat(radius.getText().toString()),
                         brightness.getProgress(),
                         locationText.getText().toString()));
@@ -90,12 +94,19 @@ public class NewPlaceActivity extends AppCompatActivity implements NewPlaceScree
     @Override
     protected void onResume() {
         super.onResume();
+
         newPlacePresenter.refreshLocation(this);
     }
 
     @Override
     public void showLocation(String locationName) {
         locationText.setText(locationName);
+    }
+
+    @Override
+    public void updateCoordinates(double latitude, double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public void addPlace(Place place) {

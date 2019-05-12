@@ -36,6 +36,12 @@ public class NewPlacePresenter extends Presenter<NewPlaceScreen>{
     public void refreshLocation(Activity activity) {
         Location location = locationInteractor.getCoordinates(activity);
         String locationName = locationInteractor.getLocationName(location);
+
+        screen.updateCoordinates(location.getLatitude(), location.getLongitude());
         screen.showLocation(locationName);
+    }
+
+    public Location getCoordinates(Activity activity) {
+        return locationInteractor.getCoordinates(activity);
     }
 }
