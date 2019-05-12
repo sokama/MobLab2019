@@ -57,7 +57,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:inputType="number"/>
+        android:inputType="numberDecimal"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -85,11 +85,13 @@
         android:gravity="end"
         style="?attr/buttonBarStyle">
         <Button
+            android:id="@+id/newPlaceCancelButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Cancel"
             style="?attr/buttonBarButtonStyle"/>
         <Button
+            android:id="@+id/newPlaceOkButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="OK"

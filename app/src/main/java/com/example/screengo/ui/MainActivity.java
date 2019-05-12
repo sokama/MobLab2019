@@ -56,9 +56,6 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
                 (mainPresenter.networkExecutor != null);
         Log.d(TAG, "Dependency injection: " + (injected ? "OK" : "FAILED"));
 
-        /* DEBUG */
-        mainPresenter.deleteAllPlaces();
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 

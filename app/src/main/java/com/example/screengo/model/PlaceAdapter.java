@@ -3,6 +3,7 @@ package com.example.screengo.model;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -83,6 +84,14 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHol
             locationText = (TextView) itemView.findViewById(R.id.placeLocationText);
             radius = (TextView) itemView.findViewById(R.id.placeRadius);
             deleteButton = (ImageButton) itemView.findViewById(R.id.placeDeleteButton);
+
+            // Brightness seekbar is not modifiable
+            brightness.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    return true;
+                }
+            });
         }
     }
 }

@@ -4,6 +4,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.screengo.R;
@@ -16,6 +20,13 @@ public class NewPlaceActivity extends AppCompatActivity implements NewPlaceScree
 
     private static final String TAG = "NewPlaceActivity_SG";
 
+    private TextView locationText;
+    private EditText name;
+    private EditText radius;
+    private SeekBar brightness;
+    private Button cancelButton;
+    private Button okButton;
+
     @Inject
     NewPlacePresenter newPlacePresenter;
 
@@ -27,14 +38,39 @@ public class NewPlaceActivity extends AppCompatActivity implements NewPlaceScree
         ScreenGoApplication.injector.inject(this);
         boolean injected = (newPlacePresenter != null) && (newPlacePresenter.placesInteractor != null) && (newPlacePresenter.locationInteractor != null);
         Log.d(TAG, "Dependency injection: " + (injected ? "OK" : "FAILED"));
+
+        locationText = (TextView) findViewById(R.id.newPlaceLocationText);
+        name = (EditText) findViewById(R.id.newPlaceName);
+        radius = (EditText) findViewById(R.id.newPlaceRadius);
+        brightness = (SeekBar) findViewById(R.id.newPlaceBrightness);
+        cancelButton = (Button) findViewById(R.id.newPlaceCancelButton);
+        okButton = (Button) findViewById(R.id.newPlaceOkButton);
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addPlace(new Place(
+                        name.getText().toString(),
+                        5, // TODO
+                        5, // TODO
+                        Float.parseFloat(radius.getText().toString()),
+                        brightness.getProgress(),
+                        locationText.getText().toString()));
+                finish();
+            }
+        });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        /* DEBUG */
-        addPlace(new Place("asd", 5, 5, 5f, 5, "Asd street"));
 
         newPlacePresenter.attachScreen(this);
     }
