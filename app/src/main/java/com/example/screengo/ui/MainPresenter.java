@@ -1,7 +1,11 @@
 package com.example.screengo.ui;
 
+import android.app.Activity;
+import android.util.Log;
+
 import com.example.screengo.interactor.LocationInteractor;
 import com.example.screengo.interactor.PlacesInteractor;
+import com.example.screengo.model.Location;
 import com.example.screengo.model.Place;
 
 import java.util.List;
@@ -10,6 +14,9 @@ import java.util.concurrent.Executor;
 import javax.inject.Inject;
 
 public class MainPresenter extends Presenter<MainScreen> {
+
+    private final static String TAG = "MainPresenter_SG";
+
     public PlacesInteractor placesInteractor;
     public LocationInteractor locationInteractor;
     public Executor networkExecutor;
@@ -33,19 +40,21 @@ public class MainPresenter extends Presenter<MainScreen> {
         super.detachScreen();
     }
 
-    public void refreshWeather() {
+    public void refreshWeather(final Activity activity) {
         // Network calls can't be on main thread
         networkExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 // Get weather info
-                String cityName = "Budapest"; // TODO: get city name from location interactor
-                int locationId = locationInteractor.getLocationId(cityName); // TODO: this should be stored on startup
+                String cityName = locationInteractor.getCityName(locationInteractor.getCoordinates(activity));
+                Log.d(TAG, "City name: " + cityName);
+                int locationId = locationInteractor.getLocationId(cityName);
                 String weatherState = locationInteractor.getWeatherState(locationId);
                 boolean isSunny = locationInteractor.isWeatherSunny(weatherState);
 
                 // Refresh screen
-                screen.showWeather(weatherState, isSunny);
+                if (screen != null)
+                    screen.showWeather(weatherState, isSunny);
             }
         });
     }

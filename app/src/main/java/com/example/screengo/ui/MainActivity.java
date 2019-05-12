@@ -1,19 +1,26 @@
 package com.example.screengo.ui;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.screengo.R;
 import com.example.screengo.ScreenGoApplication;
 import com.example.screengo.model.Place;
+import com.example.screengo.model.PlaceAdapter;
 
 import java.util.List;
 
@@ -21,13 +28,33 @@ import javax.inject.Inject;
 
 public class MainActivity extends AppCompatActivity implements MainScreen {
 
+    private static final String TAG = "MainActivity_SG";
+
+    private static final String SHARED_PREF_BRIGHTNESS_CLOUDY = "BRIGHTNESS_CLOUDY";
+    private static final String SHARED_PREF_BRIGHTNESS_SUNNY = "BRIGHTNESS_SUNNY";
+
+
     @Inject
     MainPresenter mainPresenter;
+
+    private TextView weatherStateTV;
+
+    private RecyclerView recyclerView;
+    private PlaceAdapter adapter;
+
+    private SeekBar outsideBrightnessCloudy;
+    private SeekBar outsideBrightnessSunny;
+
+    private boolean isSunny;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        weatherStateTV = findViewById(R.id.weatherStateText);
+        outsideBrightnessCloudy = findViewById(R.id.CloudyBrightness);
+        outsideBrightnessSunny = findViewById(R.id.SunnyBrightness);
 
         /* DEBUG */
         ScreenGoApplication.injector.inject(this);
@@ -36,11 +63,7 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
                 (mainPresenter.locationInteractor != null) &&
                 (mainPresenter.locationInteractor.weatherApi != null) &&
                 (mainPresenter.networkExecutor != null);
-        TextView debugTextView = findViewById(R.id.debugText);
-        debugTextView.append("Dependency injection: " + (injected ? "OK" : "FAILED") + "\n");
-
-        /* DEBUG */
-        mainPresenter.deleteAllPlaces();
+        Log.d(TAG, "Dependency injection: " + (injected ? "OK" : "FAILED"));
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -53,6 +76,9 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
                 startActivityForResult(launchNewPlacePageIntent, 0);
             }
         });
+
+        initRecyclerView();
+        getOutsideBrightnesses();
     }
 
     @Override
@@ -64,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
     @Override
     protected void onStop() {
         super.onStop();
+        saveOutsideBrightnesses();
         mainPresenter.detachScreen();
     }
 
@@ -72,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
         super.onResume();
 
         mainPresenter.refreshPlaces();
-        mainPresenter.refreshWeather();
+        mainPresenter.refreshWeather(this);
     }
 
     @Override
@@ -99,21 +126,64 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
     }
 
     @Override
-    public void showWeather(String weatherText, boolean isSunny) {
-        // TODO
-        TextView debugTextView = findViewById(R.id.debugText);
-        debugTextView.append("Weather: " + weatherText + " (" + (isSunny ? "Sunny" : "Not sunny") + ")\n");
+    public void showWeather(final String weatherText, final boolean isSunny) {
+
+        this.isSunny = isSunny;
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                weatherStateTV.setText(weatherText + " (" + (isSunny ? "Sunny" : "Not sunny") + ")");
+            }
+        });
     }
 
     @Override
     public void showPlaces(List<Place> places) {
-        TextView debugTextView = findViewById(R.id.debugText);
-        debugTextView.append("Stored places: " + places.size() + "\n");
-        // TODO
+        loadItemsInBackground();
     }
 
-    public void deletePlace(Place place) {
-        // TODO: called when a place's delete button is pressed. Pass the place to the presenter
-        mainPresenter.deletePlace(place);
+    private void initRecyclerView() {
+        recyclerView = (RecyclerView) findViewById(R.id.placeListRecyclerView);
+        adapter = new PlaceAdapter();
+        loadItemsInBackground();
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+    }
+
+    private void loadItemsInBackground() {
+        new AsyncTask<Void, Void, List<Place>>() {
+
+            @Override
+            protected List<Place> doInBackground(Void... voids) {
+                return Place.listAll(Place.class);
+            }
+
+            @Override
+            protected void onPostExecute(List<Place> places) {
+                super.onPostExecute(places);
+                adapter.update(places);
+            }
+        }.execute();
+    }
+
+    private void getOutsideBrightnesses() {
+        int defaultBrightness = 50;
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+
+        int cloudyBrightness = sharedPref.getInt(SHARED_PREF_BRIGHTNESS_CLOUDY, defaultBrightness);
+        int sunnyBrightness = sharedPref.getInt(SHARED_PREF_BRIGHTNESS_SUNNY, defaultBrightness);
+
+        outsideBrightnessCloudy.setProgress(cloudyBrightness);
+        outsideBrightnessSunny.setProgress(sunnyBrightness);
+    }
+
+    private void saveOutsideBrightnesses() {
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+
+        sharedPref.edit()
+                .putInt(SHARED_PREF_BRIGHTNESS_CLOUDY, outsideBrightnessCloudy.getProgress())
+                .putInt(SHARED_PREF_BRIGHTNESS_SUNNY, outsideBrightnessSunny.getProgress())
+                .apply();
     }
 }
